@@ -3,7 +3,7 @@ from upstash_redis import Redis
 
 from app.config import settings
 
-_redis_client = Redis | None = None 
+_redis_client: Redis | None = None
 
 def get_redis_client() -> Redis:
     global _redis_client
@@ -17,7 +17,7 @@ class RateLimiter:
         self.max_requests = max_requests
         self.window_seconds = window_seconds
     
-    def is_allowed(self, key: str) -> Tuple[bool, int, int]:
+    def is_allowed(self, key: str) -> tuple[bool, int, int]:
         client = get_redis_client()
         now = time.time()
         window_start = now - self.window_seconds
@@ -36,7 +36,7 @@ class RateLimiter:
         return allowed, remaining, request_count
 
 def is_allowed_ip(ip: str, route: str, window_seconds: int = 60, max_requests: int = 10) -> tuple[bool, int, int]:
-    limiter = RateLimiter(max_requests=limit, window_seconds=window_seconds)
+    limiter = RateLimiter(max_requests=max_requests, window_seconds=window_seconds)
     key = f"rate_limit:{ip}:{route}"
     return limiter.is_allowed(key)
 

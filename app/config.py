@@ -6,8 +6,9 @@ class Settings(BaseSettings):
     tavily_api_key: str
     openai_api_key: str
     gemini_api_key: str
-    llm_model_answer: str = "gpt-4o-mini"
-    llm_model_grader: str = "gpt-4o-mini"
+    groq_api_key: str
+    llm_model_answer: str = "gemini-3.8-flash"
+    llm_model_grader: str = "openai/gpt-oss-120b"
     embedding_model: str = "text-embedding-3-small"
 
     jwt_secret: str

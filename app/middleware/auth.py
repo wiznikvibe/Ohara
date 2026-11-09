@@ -22,16 +22,15 @@ def verify_password(password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     username: str,
-    expires_delta_second: int | None = None,
+    expires_delta_seconds: int | None = None,
     is_admin: bool = False,
 ) -> str:
-
     if expires_delta_seconds is None:
         expires_delta_seconds = settings.jwt_expiration_minutes * 60
-        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
-            seconds=expires_delta_seconds
-        )
-    
+    expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+        seconds=expires_delta_seconds
+    )
+
     payload = {
         "sub": username,
         "exp": expire,
@@ -49,11 +48,12 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         )
 
         username = payload.get("sub")
-        if not isinstance(username, str) or username is None:
+        if not isinstance(username, str) or not username:
             raise HTTPException(
-
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
             )
-        is_admin: bool = payload.get("is_admin", False)
+        is_admin: bool = bool(payload.get("is_admin", False))
         return User(username=username, is_admin=is_admin)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
@@ -66,10 +66,10 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
             detail="Could not validate credentials"
         ) from None
 
-def require_admin(users: User = Depends(get_current_user)) -> User:
+def require_admin(user: User = Depends(get_current_user)) -> User:
     if not user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin access required",
         )
     return user
