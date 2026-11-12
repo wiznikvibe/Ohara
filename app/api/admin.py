@@ -56,7 +56,7 @@ async def _ping_gemini() -> bool:
     try:
         from google import genai
         client = genai.Client(api_key=settings.gemini_api_key)
-        client.list_models()
+        next(client.models.list(), None)
         return True
     except Exception as e:
         logger.debug(f"Error pinging Gemini: {e}")
@@ -64,8 +64,9 @@ async def _ping_gemini() -> bool:
 
 async def _ping_tavily() -> bool:
     try:
-        from app.services.web_search import search_web
-        search_web("health check")
+        from tavily import TavilyClient
+        client = TavilyClient(api_key=settings.tavily_api_key)
+        client.search("health check", max_results=1)
         return True
     except Exception as e:
         logger.debug(f"Error pinging Tavily: {e}")
