@@ -27,8 +27,10 @@ sync:
 seed:
 	uv run python scripts/seed_db.py
 
+NOISE_SAMPLE ?= 150
+
 seed-docs:
-	uv run python -c "from scripts.seed_db import seed_docs; seed_docs()"
+	uv run python -c "from scripts.seed_db import seed_docs; seed_docs(noise_sample_size='$(NOISE_SAMPLE)')"
 
 seed-data:
 	bash scripts/data_pipeline/run_all.sh
