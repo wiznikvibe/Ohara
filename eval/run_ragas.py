@@ -8,9 +8,9 @@ import sys
 from pathlib import Path
 
 from eval.invokers import ServiceInvoker, SkippedIntent
-from eval.poprofiles import PROFILES
-from est_checks import forbidden_keywords_check, source_overlap
-from eval.val.ragas_adapter import run as run_ragas
+from eval.post_checks import forbidden_keywords_check, source_overlap
+from eval.profiles import PROFILES
+from eval.ragas_adapters import run as run_ragas
 from eval.reporting import aggregate, print_table
 from eval.schema import load_goldens
 

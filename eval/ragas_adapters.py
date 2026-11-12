@@ -3,10 +3,10 @@ from __future__ import annotations
 import os
 
 from datasets import Dataset
-from langchain_openai import OpenAIEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from ragas import evaluate
 from ragas.embeddings import LangchainEmbeddingsWrapper
-from ragas.llms import llm_factory
+from ragas.llms import LangchainLLMWrapper, llm_factory
 from ragas.metrics import (
     answer_relevancy,
     context_precision,
@@ -25,12 +25,27 @@ METRICS = [
     answer_relevancy,
 ]
 
+_GROQ_OPENAI_BASE_URL = "https://api.groq.com/openai/v1"
+
+
+def _is_groq_model(model: str) -> bool:
+    return model.startswith("openai/") or "gpt-oss" in model
 
 
 def _get_ragas_llm():
     """Create a Ragas-compatible LLM using app settings."""
+    model = settings.llm_model_grader
+    # Match app.services.llm_services: grader ids like openai/gpt-oss-* are Groq.
+    if _is_groq_model(model):
+        chat = ChatOpenAI(
+            model=model,
+            api_key=settings.groq_api_key,
+            base_url=_GROQ_OPENAI_BASE_URL,
+        )
+        return LangchainLLMWrapper(chat)
+
     os.environ.setdefault("OPENAI_API_KEY", settings.openai_api_key)
-    return llm_factory(settings.llm_model_grader)
+    return llm_factory(model)
 
 def _get_ragas_embeddings():
     """Create Ragas-compatible embeddings using app settings."""
