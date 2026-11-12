@@ -5,7 +5,7 @@ import json
 import logging
 import threading 
 import time 
-from collection import defaultdict
+from collections import defaultdict
 from typing import Any
 
 from app.config import settings

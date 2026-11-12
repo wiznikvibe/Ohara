@@ -28,7 +28,7 @@ def embed_texts(texts: list[str], model: str | None = None) -> list[list[float]]
         response = openai_client.embeddings.create(input=miss_texts, model=model)
 
         for idx, item in enumerate(response.data):
-            original_idx = miss_indices[idx_in_misses]
+            original_idx = miss_indices[idx]
             vector = item.embedding
             results[original_idx] = vector
             query_cache.set_embedding(miss_texts[idx], vector)
