@@ -34,12 +34,17 @@ services:
     ports:
       - "8000:8000"
     working_dir: /app
+    # Host seed (make seed-docs) talks to localhost:6333. On Docker Desktop/WSL
+    # that is often NOT the compose `qdrant` service — point the app at the same
+    # host-published endpoint so queries see the ingested collection.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       # Non-secrets only. Secrets come from env_file (.env) — do not re-declare
       # them with ${VAR} here or empty host interpolation will override/blank them.
       - PYTHONPATH=/app
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/adv_rag
-      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_URL=http://host.docker.internal:6333
       - LOG_JSON=false
       - LOG_LEVEL=INFO
       # Self-RAG / reflection tuning (overridable via host .env)
