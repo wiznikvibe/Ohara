@@ -35,8 +35,13 @@ class RateLimiter:
 
         return allowed, remaining, request_count
 
-def is_allowed_ip(ip: str, route: str, window_seconds: int = 60, max_requests: int = 10) -> tuple[bool, int, int]:
-    limiter = RateLimiter(max_requests=max_requests, window_seconds=window_seconds)
+def is_allowed_ip(
+    ip: str,
+    route: str,
+    window_seconds: int = 60,
+    limit: int = 10,
+) -> tuple[bool, int, int]:
+    limiter = RateLimiter(max_requests=limit, window_seconds=window_seconds)
     key = f"rate_limit:{ip}:{route}"
     return limiter.is_allowed(key)
 
